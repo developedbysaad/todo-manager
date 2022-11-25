@@ -59,14 +59,14 @@ app.delete("/todos/:id", async function (request, response) {
   console.log("We have to delete a Todo with ID: ", request.params.id);
   // FILL IN YOUR CODE HERE
   // Delete everyone named "Jane"
-
+  const todo = await Todo.findByPk(request.params.id);
   try {
-    await Todo.destroy({
-      where: {
-        id: request.params.id,
-      },
-    });
-    return response.send(true);
+    if (todo) {
+      await todo.delete();
+      return response.json(true);
+    } else {
+      return response.json(false);
+    }
   } catch (error) {
     console.log(error);
     return response.status(422).json(error);
