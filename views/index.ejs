@@ -1,15 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./css/styles.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./css/styles.css" />
     <title>Document</title>
-</head>
-<body>
-   <%- include("header.ejs") %>
-   <%- include("todos.ejs") %>
-   <%- include("footer.ejs") %>
-</body>
+  </head>
+  <body>
+    <div class="grid grid-cols-6 py-4">
+      <div class="col-start-3 col-span-2">
+        <%- include("header.ejs") %>
+        <form action="">
+          <div class="flex gap-2 py-4">
+            <div class="flex-auto">
+              <input
+                type="text"
+                placeholder="What's next?"
+                class="border border-gray-300 rounded w-full p-2 text-gray-900 text-sm"
+                required
+              />
+            </div>
+            <div class="flex-auto">
+              <input
+                type="date"
+                class="border border-gray-300 rounded w-full p-2 text-gray-900 text-sms leading-4"
+              />
+            </div>
+            <div class="flex-none">
+              <button
+                type="submit"
+                class="bg-green-600 text-white px-5 py-2 rounded font-medium py-1.5 mr-2 mb-2"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </form>
+        <%- include("todos.ejs", {title: "Overdue", todos: overdue}) %> <%-
+        include("todos.ejs", {title: "Due Today", todos: dueToday}) %> <%-
+        include("todos.ejs", {title: "Due Later", todos: dueLater}) %>
+      </div>
+      <div class="col-start-3 col-span-2 m-auto">
+        <%- include("footer.ejs") %>
+      </div>
+    </div>
+  </body>
 </html>
