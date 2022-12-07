@@ -14,12 +14,20 @@ app.get("/", async (request, response) => {
   const overdue = await Todo.overdue();
   const dueToday = await Todo.dueToday();
   const dueLater = await Todo.dueLater();
-  response.render("index", {
-    title: "Todo application",
-    overdue,
-    dueToday,
-    dueLater,
-  });
+  if (request.accepts("html")) {
+    response.render("index", {
+      title: "Todo application",
+      overdue,
+      dueToday,
+      dueLater,
+    });
+  } else {
+    response.json({
+      overdue,
+      dueToday,
+      dueLater,
+    });
+  }
 });
 
 app.get("/todos", async function (_request, response) {
@@ -74,16 +82,10 @@ app.put("/todos/:id/markAsCompleted", async function (request, response) {
 
 app.delete("/todos/:id", async function (request, response) {
   console.log("We have to delete a Todo with ID: ", request.params.id);
-  // FILL IN YOUR CODE HERE
-  // Delete everyone named "Jane"
-  const todo = await Todo.findByPk(request.params.id);
+
   try {
-    if (todo) {
-      await todo.delete();
-      return response.json(true);
-    } else {
-      return response.json(false);
-    }
+    await Todo.remove(request.params.id);
+    return response.json({ success: true });
   } catch (error) {
     console.log(error);
     return response.status(422).json(error);

@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
           dueDate: {
             [Op.lt]: new Date(),
           },
-          completed: false,
+          // completed: false,
         },
         order: [["id", "ASC"]],
       });
@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
           dueDate: {
             [Op.eq]: new Date(),
           },
-          completed: false,
+          // completed: false,
         },
         order: [["id", "ASC"]],
       });
@@ -46,7 +46,7 @@ module.exports = (sequelize, DataTypes) => {
           dueDate: {
             [Op.gt]: new Date(),
           },
-          completed: false,
+          // completed: false,
         },
         order: [["id", "ASC"]],
       });
@@ -55,8 +55,16 @@ module.exports = (sequelize, DataTypes) => {
     markAsCompleted() {
       return this.update({ completed: true });
     }
-    delete() {
-      return this.destroy();
+    // delete() {
+    //   return this.destroy();
+    // }
+
+    static async remove(id) {
+      return this.destroy({
+        where: {
+          id,
+        },
+      });
     }
   }
   Todo.init(
