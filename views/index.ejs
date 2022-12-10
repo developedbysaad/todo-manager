@@ -13,7 +13,7 @@
         .querySelector('meta[name="csrf-token"]')
         .getAttribute("content");
       function updateTodo(id, completed) {
-        fetch(`/todos/${id}/markAsCompleted`, {
+        fetch(`/todos/${id}`, {
           method: "put",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({

@@ -52,8 +52,8 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
 
-    markAsCompleted() {
-      return this.update({ completed: true });
+    setCompletionStatus(status) {
+      return this.update({ completed: status });
     }
     // delete() {
     //   return this.destroy();
