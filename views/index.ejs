@@ -86,7 +86,8 @@
         "count-overdue"}) %> <%- include("todos.ejs", {title: "Due Today",
         todos: dueToday, countId: "count-due-today"}) %> <%-
         include("todos.ejs", {title: "Due Later", todos: dueLater, countId:
-        "count-due-later"}) %>
+        "count-due-later"}) %> <%- include("todos.ejs", {title: "Completed",
+        todos: completed, countId: "count-completed"}) %>
       </div>
       <div class="col-start-3 col-span-2 m-auto">
         <%- include("footer.ejs") %>
