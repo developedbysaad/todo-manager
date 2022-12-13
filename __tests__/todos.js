@@ -38,7 +38,7 @@ describe("Todo Application", function () {
     expect(response.statusCode).toBe(302);
   });
 
-  test("Marks a todo with the given ID as complete", async () => {
+  test("Update todo status with the given ID", async () => {
     let res = await agent.get("/");
     let csrfToken = extractCsrfToken(res);
     await agent.post("/todos").send({
@@ -105,7 +105,6 @@ describe("Todo Application", function () {
 
     const deleteResponse = await agent.delete(`/todos/${latestTodo.id}/`).send({
       _csrf: csrfToken,
-      completed: false,
     });
     const parsedUpdateResponse = JSON.parse(deleteResponse.text);
     expect(parsedUpdateResponse.success).toBe(true);
