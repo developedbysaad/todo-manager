@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const { Todo } = require("./models");
+const { Todo, User } = require("./models");
 const bodyParser = require("body-parser");
 const path = require("path");
 const cookieParser = require("cookie-parser");
@@ -36,6 +36,27 @@ app.get("/", async (request, response) => {
       dueLater,
       completed,
     });
+  }
+});
+
+app.get("/signup", (request, response) => {
+  response.render("signup", {
+    title: "signup",
+    csrfToken: request.csrfToken(),
+  });
+});
+
+app.post("/users", async (request, response) => {
+  try {
+    await User.create({
+      firsName: request.body.firstName,
+      lastName: request.body.lastName,
+      email: request.body.email,
+      password: request.body.password,
+    });
+    response.redirect("/");
+  } catch (error) {
+    console.log(error);
   }
 });
 
