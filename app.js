@@ -6,38 +6,102 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const csrf = require("tiny-csrf");
 
+const passport = require("passport");
+const connectEnsureLogin = require("connect-ensure-login");
+const session = require("express-session");
+const LocalStrategy = require("passport-local");
+
 app.use(bodyParser.json());
+
+// Set EJS as view engine
+app.set("view engine", "ejs");
+
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser("shh! some secret string"));
 app.use(csrf("this_should_be_32_character_long", ["POST", "PUT", "DELETE"]));
-
-app.set("view engine", "ejs");
-
 app.use(express.static(path.join(__dirname, "public")));
 
-app.get("/", async (request, response) => {
-  const overdue = await Todo.overdue();
-  const dueToday = await Todo.dueToday();
-  const dueLater = await Todo.dueLater();
-  const completed = await Todo.completed();
-  if (request.accepts("html")) {
-    response.render("index", {
-      title: "Todo application",
-      overdue,
-      dueToday,
-      dueLater,
-      completed,
-      csrfToken: request.csrfToken(),
-    });
-  } else {
-    response.json({
-      overdue,
-      dueToday,
-      dueLater,
-      completed,
-    });
-  }
+app.use(
+  session({
+    secret: "my-super-secret-key-2459283459244",
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000, //24hrs
+    },
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(
+  new LocalStrategy(
+    {
+      usernameField: "email",
+      passwordField: "password",
+    },
+    (username, password, done) => {
+      User.findOne({
+        where: { email: username, password: password }
+          .then((user) => {
+            return done(null, user);
+          })
+          .catch((error) => {
+            return error;
+          }),
+      });
+    }
+  )
+);
+
+passport.serializeUser((user, done) => {
+  console.log("Serializing user in session", user.id);
+  done(null, user.id);
 });
+
+passport.deserializeUser((id, done) => {
+  User.findByPk(id)
+    .then((user) => {
+      done(null, user);
+    })
+    .catch((error) => {
+      done(error, null);
+    });
+});
+
+app.get("/", async (request, response) => {
+  response.render("index", {
+    title: "Todo application",
+    csrfToken: request.csrfToken(),
+  });
+});
+
+app.get(
+  "/todos",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    const overdue = await Todo.overdue();
+    const dueToday = await Todo.dueToday();
+    const dueLater = await Todo.dueLater();
+    const completed = await Todo.completed();
+    if (request.accepts("html")) {
+      response.render("todos", {
+        title: "Todo application",
+        overdue,
+        dueToday,
+        dueLater,
+        completed,
+        csrfToken: request.csrfToken(),
+      });
+    } else {
+      response.json({
+        overdue,
+        dueToday,
+        dueLater,
+        completed,
+      });
+    }
+  }
+);
 
 app.get("/signup", (request, response) => {
   response.render("signup", {
@@ -48,13 +112,18 @@ app.get("/signup", (request, response) => {
 
 app.post("/users", async (request, response) => {
   try {
-    await User.create({
+    const user = await User.create({
       firsName: request.body.firstName,
       lastName: request.body.lastName,
       email: request.body.email,
       password: request.body.password,
     });
-    response.redirect("/");
+    request.login(user, (err) => {
+      if (err) {
+        console.log(err);
+      }
+      response.redirect("/todos");
+    });
   } catch (error) {
     console.log(error);
   }
