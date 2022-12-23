@@ -10,6 +10,9 @@ const passport = require("passport");
 const connectEnsureLogin = require("connect-ensure-login");
 const session = require("express-session");
 const LocalStrategy = require("passport-local");
+const bcrypt = require("bcrypt");
+
+const saltRounds = 10;
 
 app.use(bodyParser.json());
 
@@ -110,13 +113,16 @@ app.get("/signup", (request, response) => {
   });
 });
 
+//Create Users
 app.post("/users", async (request, response) => {
+  //Hash password using bcrypt
+  const hashedPwd = await bcrypt.hash(request.body.password, saltRounds);
   try {
     const user = await User.create({
       firsName: request.body.firstName,
       lastName: request.body.lastName,
       email: request.body.email,
-      password: request.body.password,
+      password: hashedPwd,
     });
     request.login(user, (err) => {
       if (err) {
