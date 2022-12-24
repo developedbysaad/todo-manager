@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const csrf = require("tiny-csrf");
+const flash = require("connect-flash");
 
 const passport = require("passport");
 const connectEnsureLogin = require("connect-ensure-login");
@@ -14,11 +15,12 @@ const bcrypt = require("bcrypt");
 
 const saltRounds = 10;
 
-app.use(bodyParser.json());
-
 // Set EJS as view engine
 app.set("view engine", "ejs");
 
+app.set("views", path.join(__dirname, "views"));
+
+app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser("shh! some secret string"));
 app.use(csrf("this_should_be_32_character_long", ["POST", "PUT", "DELETE"]));
@@ -30,8 +32,16 @@ app.use(
     cookie: {
       maxAge: 24 * 60 * 60 * 1000, //24hrs
     },
+    resave: false,
+    saveUninitialized: false,
   })
 );
+
+app.use(flash());
+app.use(function (request, response, next) {
+  response.locals.messages = request.flash();
+  next();
+});
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -51,11 +61,11 @@ passport.use(
           if (result) {
             return done(null, user);
           } else {
-            return done("Invalid Password");
+            return done(null, false, { message: "Invalid password" });
           }
         })
-        .catch((error) => {
-          return error;
+        .catch(() => {
+          return done(null, false, { message: "Email Id not found" });
         });
     }
   )
@@ -147,7 +157,10 @@ app.get("/login", (request, response) => {
 
 app.post(
   "/session",
-  passport.authenticate("local", { failureRedirect: "/login" }),
+  passport.authenticate("local", {
+    failureRedirect: "/login",
+    failureFlash: true,
+  }),
   (request, response) => {
     console.log(request.user);
     response.redirect("/todos");
