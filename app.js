@@ -44,14 +44,19 @@ passport.use(
     },
     (username, password, done) => {
       User.findOne({
-        where: { email: username, password: password }
-          .then((user) => {
+        where: { email: username },
+      })
+        .then(async (user) => {
+          const result = await bcrypt.compare(password, user.password);
+          if (result) {
             return done(null, user);
-          })
-          .catch((error) => {
-            return error;
-          }),
-      });
+          } else {
+            return done("Invalid Password");
+          }
+        })
+        .catch((error) => {
+          return error;
+        });
     }
   )
 );
@@ -134,6 +139,19 @@ app.post("/users", async (request, response) => {
     console.log(error);
   }
 });
+
+app.get("/login", (request, response) => {
+  response.render("login", { title: "Login", csrfToken: request.csrfToken() });
+});
+
+app.post(
+  "/session",
+  passport.authenticate("local", { failureRedirect: "/login" }),
+  (request, response) => {
+    console.log(request.user);
+    response.redirect("/todos");
+  }
+);
 
 app.get("/todos", async function (_request, response) {
   console.log("Processing list of all Todos ...");
