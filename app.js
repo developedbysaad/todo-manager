@@ -148,6 +148,11 @@ app.post("/users", async (request, response) => {
     });
   } catch (error) {
     console.log(error);
+    request.flash(
+      "error",
+      error.errors.map((error) => error.message)
+    );
+    return response.redirect("/signup");
   }
 });
 
@@ -212,6 +217,13 @@ app.post(
       return response.redirect("/todos");
     } catch (error) {
       console.log(error);
+      if (error.name === "SequelizeValidationError") {
+        request.flash(
+          "error",
+          error.errors.map((error) => error.message)
+        );
+        return response.redirect("/todos");
+      }
       return response.status(422).json(error);
     }
   }
