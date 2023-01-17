@@ -12,12 +12,12 @@
   <body>
     <div class="grid grid-cols-6 py-4">
       <div class="col-start-3 col-span-2">
-        <%- include("header.ejs") %>
+        <h1  class="text-2xl font-semibold text-gray-600">My <a href="/" class="text-green-600">Todo List</a></h1>
         <h6>Sign up as a new user</h6>
         <form action="/users" method="post">
           <% if(messages && messages.error && messages.error.length > 0)  { %>
             <% for(var i=0; i<messages.error.length; i++) { %>
-                    <li> <%= messages.error[i] %></li>
+                    <span class="text-red-600 block"> <%= messages.error[i] %></span>
             <% } %>
           <% } %>
           <input type="hidden" name="_csrf" value="<%= csrfToken %>" />

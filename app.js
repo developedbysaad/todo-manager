@@ -98,12 +98,15 @@ app.get(
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
     const loggedInUser = request.user.id;
+    const user = await User.findByPk(loggedInUser);
     const overdue = await Todo.overdue(loggedInUser);
     const dueToday = await Todo.dueToday(loggedInUser);
     const dueLater = await Todo.dueLater(loggedInUser);
     const completed = await Todo.completed(loggedInUser);
     if (request.accepts("html")) {
       response.render("todos", {
+        user: true,
+        username: user.dataValues.firstName,
         title: "Todo application",
         overdue,
         dueToday,
@@ -132,10 +135,26 @@ app.get("/signup", (request, response) => {
 //Create Users
 app.post("/users", async (request, response) => {
   //Hash password using bcrypt
+  if (request.body.firstName.length === 0) {
+    request.flash("error", "First Name is required");
+    return response.redirect("/signup");
+  }
+  if (request.body.lastName.length === 0) {
+    request.flash("error", "Last Name is required");
+    return response.redirect("/signup");
+  }
+  if (request.body.email.length === 0) {
+    request.flash("error", "Email is required");
+    return response.redirect("/signup");
+  }
+  if (request.body.password.length < 6) {
+    request.flash("error", "Password length should be greater than 5");
+    return response.redirect("/signup");
+  }
   const hashedPwd = await bcrypt.hash(request.body.password, saltRounds);
   try {
     const user = await User.create({
-      firsName: request.body.firstName,
+      firstName: request.body.firstName,
       lastName: request.body.lastName,
       email: request.body.email,
       password: hashedPwd,
