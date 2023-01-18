@@ -1,19 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="csrf-token" content="<%= csrfToken %>" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="./css/styles.css" />
+    <%- include("head.ejs") %>
     <title><%= title %></title>
   </head>
   <body>
     <div class="grid grid-cols-6 py-4">
       <div class="col-start-3 col-span-2">
         <h1  class="text-2xl font-semibold text-gray-600">My <a href="/" class="text-green-600">Todo List</a></h1>
+        <br>
         <h6>Sign up as a new user</h6>
+        <span>Already have an account? <a href="/login" class="text-blue-600 hover:text-blue-900">Login here!</a></span>
         <form action="/users" method="post">
           <% if(messages && messages.error && messages.error.length > 0)  { %>
             <% for(var i=0; i<messages.error.length; i++) { %>

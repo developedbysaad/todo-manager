@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon -e js,ejs",
+    "tailwind:css": "npx tailwindcss -i ./public/css/tailwind.css -o ./public/css/styles.css --watch",
     "start:prod": "node index.js",
     "pretest": "NODE_ENV=test npx sequelize-cli db:drop && NODE_ENV=test npx sequelize-cli db:create",
     "test": "NODE_ENV=test jest --detectOpenHandles",
@@ -41,6 +42,7 @@
     "nodemon": "^2.0.20",
     "prettier": "^2.7.1",
     "sequelize-cli": "^6.4.1",
-    "supertest": "^6.2.4"
+    "supertest": "^6.2.4",
+    "tailwindcss": "^3.2.4"
   }
 }

@@ -1,13 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="csrf-token" content="<%= csrfToken %>" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="./css/styles.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+    <%- include("head.ejs") %>
     <title><%= title %></title>
     <script>
       const token = document
@@ -89,8 +83,11 @@
           </div>
         </form>
         <%- include("todo.ejs", {title: "Overdue", todos: overdue, countId: "count-overdue" }) %>
+        <br>
         <%- include("todo.ejs", {title: "Due Today",todos: dueToday, countId: "count-due-today"}) %> 
+        <br>
         <%- include("todo.ejs", {title: "Due Later", todos: dueLater, countId:"count-due-later"}) %> 
+        <br>
         <%- include("todo.ejs", {title: "Completed",todos: completed, countId: "count-completed"}) %>
       </div>
       <div class="col-start-3 col-span-2 m-auto">
