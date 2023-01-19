@@ -10,7 +10,7 @@
         <h1  class="text-2xl font-semibold text-gray-600">My <a href="/" class="text-green-600">Todo List</a></h1>
         <br>
         <h6>Sign up as a new user</h6>
-        <span>Already have an account? <a href="/login" class="text-blue-600 hover:text-blue-900">Login here!</a></span>
+        <span>Already have an account? <a href="/login" class="text-blue-600 hover:text-blue-900">Login here</a></span>
         <form action="/users" method="post">
           <% if(messages && messages.error && messages.error.length > 0)  { %>
             <% for(var i=0; i<messages.error.length; i++) { %>
